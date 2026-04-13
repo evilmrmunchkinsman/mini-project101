@@ -1,11 +1,21 @@
-[
+{
+  "attendance": "Minimum 75 percent attendance is required in each subject. If attendance falls below this limit, the student may not be allowed to appear for exams. Medical leave can be considered only with valid proof submitted to the administration.",
 
-	{
-		"title": "Exam schedule",
-		"content": "end sems start from 5th may"
-	},
-	{
-		"title": "attendance",
-		"content": "75% attendce is must"
-	}
-]
+  "exams": "The college conducts two main exams: mid semester and end semester. Mid semester exams are usually conducted in October, and end semester exams are conducted in December or January. Students must carry their ID cards during exams.",
+
+  "grading": "The grading system is based on marks obtained in internal assessments and semester exams. Grades are assigned as A, B, C, D, or F. An F grade means the student has failed and must reappear for the exam.",
+
+  "leave_policy": "Students must inform their class teacher or department in advance before taking leave. In case of emergency, leave should be reported as soon as possible. Continuous absence without notice may lead to disciplinary action.",
+
+  "library": "The college library is open from 9 AM to 8 PM on weekdays. Students must maintain silence inside the library. Books should be returned on time to avoid fines.",
+
+  "hostel": "Hostel students must follow the in time rules strictly. Late entry is not allowed without prior permission. Visitors are only allowed during designated hours.",
+
+  "discipline": "Students are expected to maintain proper behavior on campus. Any form of misconduct, cheating, or violation of rules can result in strict disciplinary action.",
+
+  "id_card": "Students must carry their ID cards at all times inside the campus. Entry may be restricted without a valid ID card.",
+
+  "canteen": "The canteen is open from 8 AM to 6 PM. Students are expected to maintain cleanliness and avoid food wastage.",
+
+  "placement": "Placement opportunities are provided to eligible students in their final year. Students must meet academic and attendance criteria to participate in placement drives."
+}

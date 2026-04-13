@@ -32,6 +32,17 @@ app.get('/',(req,res) => {
 app.post("/ask",async(req,res) => {
 	try{
 		const {question}=  req.body;
+		if(Object.keys(req.body).length===0){
+			return res.status(400).json({err:"QUESTION IS REQUIRED"});
+		}
+		const rawdata= fs.readFileSync("documents.json",'utf-8');
+		const documents= rawdata
+		const prompt=`answer this clearly for a college student.
+		If answer not found, say "Not available".
+		DATA:
+		${rawdata} 
+		QUESTION:
+		${question}`;
 		const response= await fetch(
 			`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
 	{

@@ -14,14 +14,14 @@ const ai = new GoogleGenAI({
 
 async function testGemini() {
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: "gemini-2.0-flash",
     contents: "Hello",
   });
 
   console.log(response.text);
 }
 
-testGemini();
+//  testGemini();
 //middleware
 app.use(express.json());
 //test route 
@@ -32,8 +32,9 @@ app.get('/',(req,res) => {
 app.post("/ask",async(req,res) => {
 	try{
 		const {question}=  req.body;
-		if(Object.keys(req.body).length===0){
-			return res.status(400).json({err:"QUESTION IS REQUIRED"});
+		if(!question){
+			return res.status(400).json({success: false,
+				err:"QUESTION IS REQUIRED"});
 		}
 		const rawdata= fs.readFileSync("documents.json",'utf-8');
 		const documents= rawdata
@@ -44,7 +45,7 @@ app.post("/ask",async(req,res) => {
 		QUESTION:
 		${question}`;
 		const response= await fetch(
-			`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+			`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
 	{
 		method:"POST",
 		headers: {
@@ -52,20 +53,24 @@ app.post("/ask",async(req,res) => {
 	}, body: JSON.stringify({
 		contents: [
 			{
-			parts: [{text:`answer this clearly in simple words for a college student:\n${question}`}],
+			parts: [{text:`answer this clearly in simple words for a college student:\n${prompt}`}],
 			},
 		],
 	})
 })
 	const data = await response.json();
-	if(!data.candidates){
-		return res.status(500).json({err:"SOMETHING WENT WRONG"});
+
+	if(!data.candidates || data.candidates.length ===0){
+		return res.status(500).json({success: false,
+			err:"SOMETHING WENT WRONG"});
 	}
 	const answer= data.candidates[0].content.parts[0].text;
-	res.json({answer})
+	res.json({ "success": true,
+		"answer":answer})
 } catch(err){
 	console.log(err)
-	res.status(500).json({err:"SOMETHING WENT WRONG"});
+	res.status(500).json({success:false,
+		err:"SOMETHING WENT WRONG"});
 }
 });
 app.listen(5000,() =>{

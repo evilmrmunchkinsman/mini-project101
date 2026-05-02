@@ -8,109 +8,77 @@ import Admin from "../models/Admin.js";
 const router = express.Router();
 
 
-// 🔹 REGISTER STUDENT
+// ✅ REGISTER STUDENT
 router.post("/register/student", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // check if already exists
     const existing = await Student.findOne({ email });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        error: "Student already exists"
-      });
+      return res.status(400).json({ success: false, error: "Student exists" });
     }
 
-    // hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
 
-    const student = await Student.create({
+    await Student.create({
       name,
       email,
-      password: hashedPassword,
+      password: hashed,
       role: "student"
     });
 
-    res.json({
-      success: true,
-      message: "Student registered successfully"
-    });
+    res.json({ success: true, message: "Student registered" });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      error: "SERVER ERROR"
-    });
+    res.status(500).json({ success: false, error: "SERVER ERROR" });
   }
 });
 
 
-// 🔹 REGISTER ADMIN
+// ✅ REGISTER ADMIN
 router.post("/register/admin", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const existing = await Admin.findOne({ email });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        error: "Admin already exists"
-      });
+      return res.status(400).json({ success: false, error: "Admin exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
 
-    const admin = await Admin.create({
+    await Admin.create({
       name,
       email,
-      password: hashedPassword,
+      password: hashed,
       role: "admin"
     });
 
-    res.json({
-      success: true,
-      message: "Admin registered successfully"
-    });
+    res.json({ success: true, message: "Admin registered" });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      error: "SERVER ERROR"
-    });
+    res.status(500).json({ success: false, error: "SERVER ERROR" });
   }
 });
 
 
-// 🔹 LOGIN (for both student + admin)
+// ✅ LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     let user = await Student.findOne({ email });
-    if (!user) {
-      user = await Admin.findOne({ email });
-    }
+    if (!user) user = await Admin.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found"
-      });
+      return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid password"
-      });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(400).json({ success: false, error: "Wrong password" });
     }
 
-    // create token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -124,11 +92,7 @@ router.post("/login", async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      error: "SERVER ERROR"
-    });
+    res.status(500).json({ success: false, error: "SERVER ERROR" });
   }
 });
 

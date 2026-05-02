@@ -5,7 +5,7 @@ import Chat from "../models/Chat.js";
 const router = express.Router();
 
 
-// 🔹 GET CHAT HISTORY
+// ✅ GET CHAT HISTORY
 router.get("/history", auth, async (req, res) => {
   try {
     const chats = await Chat.find({
@@ -17,8 +17,7 @@ router.get("/history", auth, async (req, res) => {
       chats
     });
 
-  } catch (err) {
-    console.log(err);
+  } catch {
     res.status(500).json({
       success: false,
       error: "SERVER ERROR"

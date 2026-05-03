@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+dotenv.config({ path: "./.env" });
 
 import authRoutes from "./routes/Auth.js";
 import adminRoutes from "./routes/Admin.js";
@@ -9,7 +10,7 @@ import studentRoutes from "./routes/Student.js";
 import chatRoutes from "./routes/Chat.js";
 // import adminRoutes from "./routes/admin.js";
 // import chatRoutes from "./routes/chat.js"
-dotenv.config();
+
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/chat", chatRoutes);
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("DB connected"))
 .catch(err => console.log(err));
+
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

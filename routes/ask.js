@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const CollegeData = require("../models/CollegeData");
-const generateAnswer = require("../utils/gemini");
 const authMiddleware = require("../middleware/authMiddleware");
 
+
+// 🔥 ASK ROUTE (protected)
 router.post("/", authMiddleware, async (req, res) => {
   const { question } = req.body;
 
@@ -13,39 +14,55 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 
   try {
+    const keyword = question.toLowerCase().split(" ").join("|");
+
     const results = await CollegeData.find({
       $or: [
-        { title: { $regex: question, $options: "i" } },
-        { content: { $regex: question, $options: "i" } }
+        { title: { $regex: keyword, $options: "i" } },
+        { content: { $regex: keyword, $options: "i" } }
       ]
-    }).limit(5);
+    }).limit(3);
 
-    const context = results.map(r => r.content).join("\n");
-
-    const prompt = `
-You are a college assistant.
-
-Rules:
-- Answer ONLY from context
-- If not found say "Not available"
-
-Context:
-${context}
-
-Question:
-${question}
-`;
-
-    const answer = await generateAnswer(prompt);
+    if (results.length === 0) {
+      return res.json({
+        answer: "No relevant information found.",
+        sources: []
+      });
+    }
 
     res.json({
-      answer,
+      answer: results[0].content,
       sources: results
     });
 
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+// ➕ ADD DATA ROUTE (you can protect this too if needed)
+router.post("/add", authMiddleware,async (req, res) => {
+  const { title, content } = req.body;
+
+  if (!title || !content) {
+    return res.status(400).json({ error: "Title and content required" });
+  }
+
+  try {
+    const newData = await CollegeData.create({ title, content });
+
+    res.json({
+      message: "Data added successfully",
+      data: newData
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to add data" });
+  }
+});
+
 
 module.exports = router;
